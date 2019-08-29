@@ -91,3 +91,26 @@ st = time.time()
 s5 =  cv2.adaptiveThreshold(crop, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY, 25, 10)
 print(time.time()-st)
 plt.imshow(s5,cmap='gray')
+
+
+import cv2
+import numpy as np
+img = cv2.imread('./img/good.bmp')
+ss = img[:,:,0]
+ss[np.where(ss==0)]=1
+ss[np.where(ss==255)]=0
+drc = np.array(np.where(ss.sum(axis=1)!=0)).tolist()[0]
+drc_g = []
+k=0
+for i in range(len(drc)-1):
+    if drc[i+1]-drc[i]>2:
+        drc_g.append(drc[k:i+1])
+        k = i+1
+drc_g.append(drc[k:len(drc)]) 
+for i in range(len(drc_g)):
+    tmp = []
+    tmp.append(drc_g[i][0])
+    tmp.append(0)
+    tmp.append(drc_g[i][-1]+1)
+    tmp.append(180)
+    drc_g[i] = tmp
