@@ -128,3 +128,30 @@ ss_crop_1 = ss[drc_g[1][0]:drc_g[1][1],:]
 drc_g_0 = split_crop(ss_crop_0,0)
 drc_g_1 = split_crop(ss_crop_1,0)
 print(time.time()-st)
+
+cc = []
+for i in range(len(drc_g_0)):
+    cc.append(cv2.resize(ss[drc_g[0][0]:drc_g[0][1],drc_g_0[i][0]:drc_g_0[i][1]],(18,27)))
+# =============================================================================
+# print(np.sum(c0==1),np.sum(c1==1),np.sum(c2==1),np.sum(c3==1),
+# np.sum(c4==1),np.sum(c5==1),np.sum(c6==1),np.sum(c7==1))
+# =============================================================================
+cc_count = []
+cc_count_ = []
+for i in range(len(cc)):
+    temp = []
+    for j in range(3):
+        for k in range(3):
+            temp.append(int(np.sum(cc[i][9*j:9*j+9,6*k:6*k+6])))
+    cc_count_.append(temp)
+    cc_count.append([temp[1]-temp[0],temp[2]-temp[1],temp[4]-temp[3],temp[5]-temp[4],temp[7]-temp[6],temp[8]-temp[7],
+                 temp[3]-temp[0],temp[6]-temp[3],temp[4]-temp[1],temp[7]-temp[4],temp[5]-temp[2],temp[8]-temp[5]])
+
+
+print(time.time()-st)
+
+def count_mean_square(list1,list2):
+    count = 0
+    for i,j in zip(list1,list2):
+        count+= (i-j)**2
+    return count
