@@ -95,22 +95,36 @@ plt.imshow(s5,cmap='gray')
 
 import cv2
 import numpy as np
+import time
+import matplotlib.pyplot as plt
 img = cv2.imread('./img/good.bmp')
-ss = img[:,:,0]
+img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+st = time.time()
+
+ss = img[:,:].copy()
 ss[np.where(ss==0)]=1
 ss[np.where(ss==255)]=0
-drc = np.array(np.where(ss.sum(axis=1)!=0)).tolist()[0]
-drc_g = []
-k=0
-for i in range(len(drc)-1):
-    if drc[i+1]-drc[i]>2:
-        drc_g.append(drc[k:i+1])
-        k = i+1
-drc_g.append(drc[k:len(drc)]) 
-for i in range(len(drc_g)):
-    tmp = []
-    tmp.append(drc_g[i][0])
-    tmp.append(0)
-    tmp.append(drc_g[i][-1]+1)
-    tmp.append(180)
-    drc_g[i] = tmp
+def split_crop(img,axis_crop):
+    drc = np.array(np.where(img.sum(axis=axis_crop)!=0)).tolist()[0]
+    drc_g = []
+    k=0
+    for i in range(len(drc)-1):
+        if drc[i+1]-drc[i]>2:
+            drc_g.append(drc[k:i+1])
+            k = i+1
+    drc_g.append(drc[k:len(drc)]) 
+    for i in range(len(drc_g)):
+        tmp = []
+        tmp.append(drc_g[i][0])
+        #tmp.append(0)
+        tmp.append(drc_g[i][-1]+1)
+        #tmp.append(180)
+        drc_g[i] = tmp
+    return drc_g
+drc_g = split_crop(ss,1)
+ss_crop_0 = ss[drc_g[0][0]:drc_g[0][1],:]
+ss_crop_1 = ss[drc_g[1][0]:drc_g[1][1],:]
+
+drc_g_0 = split_crop(ss_crop_0,0)
+drc_g_1 = split_crop(ss_crop_1,0)
+print(time.time()-st)
